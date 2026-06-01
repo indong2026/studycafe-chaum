@@ -31,6 +31,8 @@ const signupBtn = document.getElementById("signupBtn");
 const mySeatText = document.getElementById("mySeatText");
 const timeSelect = document.getElementById("timeSelect");
 
+const changePwBtn = document.getElementById("changePwBtn");
+
 let currentUser = null;
 let selectedSeat = null;
 
@@ -270,3 +272,55 @@ setInterval(() => {
 }, 60000);
 
 render();
+
+changePwBtn.onclick = async () => {
+
+  if (!currentUser) {
+    alert("로그인 먼저");
+    return;
+  }
+
+  const oldPw =
+    prompt("현재 비밀번호 입력");
+
+  const newPw =
+    prompt("새 비밀번호 입력");
+
+  const pwRule =
+    /^(?=.*[!@#$%^&*])(?=.*[A-Za-z])(?=.*\d).{4,}$/;
+
+  if (!oldPw || !newPw) {
+    alert("입력 취소");
+    return;
+  }
+
+  if (!pwRule.test(newPw)) {
+    alert("숫자/영문/특수문자 포함");
+    return;
+  }
+
+  try {
+    const ref =
+      doc(db, "users", currentUser);
+
+    const snap =
+      await getDoc(ref);
+
+    if (
+      snap.data().password !== oldPw
+    ) {
+      alert("현재 비밀번호 틀림");
+      return;
+    }
+
+    await updateDoc(ref, {
+      password: newPw
+    });
+
+    alert("비밀번호 변경 완료");
+
+  } catch (e) {
+    console.error(e);
+    alert("변경 실패");
+  }
+};
