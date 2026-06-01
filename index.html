@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>스터디카페 좌석</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>스터디카페 좌석 선택</h1>
+
+    <div class="login-box">
+
+        <input
+            id="idInput"
+            type="text"
+            placeholder="이메일">
+
+        <input
+            id="pwInput"
+            type="password"
+            placeholder="비밀번호">
+
+        <button id="signupBtn">
+            회원가입
+        </button>
+
+        <button id="loginBtn">
+            로그인
+        </button>
+
+    </div>
+
+    <p id="mySeatText">
+        로그인 해주세요.
+    </p>
+
+    <div
+        id="studyRoom"
+        class="study-room">
+
+        <div class="desk">1</div>
+        <div class="desk">2</div>
+
+        <div class="aisle"></div>
+
+        <div class="desk">3</div>
+        <div class="desk">4</div>
+
+        <div class="desk">5</div>
+        <div class="desk">6</div>
+
+        <div class="aisle"></div>
+
+        <div class="desk">7</div>
+        <div class="desk">8</div>
+
+        <div class="desk">9</div>
+        <div class="desk">10</div>
+
+        <div class="aisle"></div>
+
+        <div class="desk">11</div>
+        <div class="desk">12</div>
+
+    </div>
+
+    <p id="message">
+        좌석을 선택하세요.
+    </p>
+
+    <div
+        id="popup"
+        class="popup hidden">
+
+        <div class="popup-box">
+
+            <p id="popupText">
+                자리를 예약하시겠습니까?
+            </p>
+
+            <label>
+                예약 시간
+            </label>
+
+            <br><br>
+
+            <select id="timeSelect">
+
+                <option value="60">
+                    1시간
+                </option>
+
+                <option value="120">
+                    2시간
+                </option>
+
+                <option value="180">
+                    3시간
+                </option>
+
+            </select>
+
+            <br><br>
+
+            <button id="reserveBtn">
+                예약하기
+            </button>
+
+            <button id="cancelBtn">
+                취소
+            </button>
+
+        </div>
+
+    </div>
+
+    <script
+        type="module"
+        src="script.js">
+    </script>
+
+</body>
+</html>
