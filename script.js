@@ -18,6 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// UI
 const popup = document.getElementById("popup");
 const popupText = document.getElementById("popupText");
 const reserveBtn = document.getElementById("reserveBtn");
@@ -25,14 +26,15 @@ const cancelBtn = document.getElementById("cancelBtn");
 
 const idInput = document.getElementById("idInput");
 const pwInput = document.getElementById("pwInput");
+
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
+const changePwBtn = document.getElementById("changePwBtn");
 
 const mySeatText = document.getElementById("mySeatText");
 const timeSelect = document.getElementById("timeSelect");
 
-const changePwBtn = document.getElementById("changePwBtn");
-
+// 상태
 let currentUser = null;
 let selectedSeat = null;
 
@@ -42,11 +44,18 @@ for (let i = 1; i <= 12; i++) {
   seats.push({
     num: i,
     used: false,
-    time: 0,
     owner: "",
+    endTime: 0,
   });
 }
 
+// 🔥 남은 시간 계산
+function getRemainingMinutes(endTime) {
+  const diff = endTime - Date.now();
+  return Math.max(0, Math.floor(diff / 60000));
+}
+
+// 🔥 렌더
 function render() {
   document.querySelectorAll(".desk").forEach((div, index) => {
     const seat = seats[index];
@@ -57,13 +66,30 @@ function render() {
       div.classList.remove("used");
     }
 
-    div.innerHTML =
-      `${seat.num}번<br>` +
-      (seat.used
-        ? seat.time <= 10
-          ? `<span class="time-red">${seat.time}분 남음</span>`
-          : `${seat.time}분 남음`
-        : "");
+    let timeText = "";
+
+    if (seat.used && seat.endTime) {
+      const remain = getRemainingMinutes(seat.endTime);
+
+      if (remain <= 0) {
+        const ref = doc(db, "seats", String(seat.num));
+
+        setDoc(ref, {
+          used: false,
+          owner: "",
+          endTime: 0,
+        });
+
+        return;
+      }
+
+      timeText =
+        remain <= 10
+          ? `<span class="time-red">${remain}분 남음</span>`
+          : `${remain}분 남음`;
+    }
+
+    div.innerHTML = `${seat.num}번<br>${timeText}`;
 
     div.onclick = async () => {
       if (!currentUser) {
@@ -71,37 +97,33 @@ function render() {
         return;
       }
 
-      // 내가 예약한 자리 취소
+      // 내 자리 취소
       if (seat.used && seat.owner === currentUser) {
-        const ok = confirm(`${seat.num}번 자리를 취소하시겠습니까?`);
-
+        const ok = confirm("취소하시겠습니까?");
         if (!ok) return;
 
         const ref = doc(db, "seats", String(seat.num));
 
         await setDoc(ref, {
           used: false,
-          time: 0,
           owner: "",
+          endTime: 0,
         });
 
         return;
       }
 
-      // 남이 사용 중
-      if (seat.used && seat.owner !== currentUser) {
-        return;
-      }
+      // 남 자리 막기
+      if (seat.used && seat.owner !== currentUser) return;
 
       // 이미 내 자리 있음
       const mine = seats.find((s) => s.owner === currentUser);
 
       if (mine) {
-        alert(`이미 ${mine.num}번 자리를 사용 중입니다`);
+        alert("이미 자리 사용 중");
         return;
       }
 
-      // 예약 팝업
       selectedSeat = seat.num;
 
       popupText.textContent = `${seat.num}번 자리를 예약하시겠습니까?`;
@@ -111,21 +133,19 @@ function render() {
   });
 }
 
+// 🔥 로그인
 loginBtn.onclick = async () => {
-
   const id = idInput.value.trim();
   const pw = pwInput.value.trim();
 
-  // 학번 5자리 체크
   const idRule = /^[0-9]{5}$/;
 
   if (!idRule.test(id)) {
-    alert("학번 5자리로 입력하세요 (예: 20901)");
+    alert("학번 5자리 입력");
     return;
   }
 
   try {
-
     const ref = doc(db, "users", id);
     const snap = await getDoc(ref);
 
@@ -141,44 +161,31 @@ loginBtn.onclick = async () => {
 
     currentUser = id;
 
-    const mine =
-      seats.find((s) => s.owner === currentUser);
-
-    if (mine) {
-      mySeatText.textContent =
-        `${currentUser}님: ${mine.num}번 자리`;
-    } else {
-      mySeatText.textContent =
-        `${currentUser}님 로그인됨`;
-    }
+    mySeatText.textContent = `${id}님 로그인됨`;
 
     render();
-
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     alert("로그인 실패");
   }
 };
 
+// 🔥 회원가입
 signupBtn.onclick = async () => {
-
   const id = idInput.value.trim();
   const pw = pwInput.value.trim();
 
-  // 학번 5자리 체크
   const idRule = /^[0-9]{5}$/;
 
-  // 비밀번호 규칙 (그대로 유지)
-  const pwRule =
-    /^(?=.*[!@#$%^&*])(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+  const pwRule = /^(?=.*[!@#$%^&*])(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
   if (!idRule.test(id)) {
-    alert("학번 5자리로 입력하세요 (예: 20901)");
+    alert("학번 5자리 입력");
     return;
   }
 
   if (!pwRule.test(pw)) {
-    alert("비밀번호는 8자 이상 / 숫자 / 영문 / 특수문자 포함");
+    alert("비밀번호 8자 이상 / 영문 / 숫자 / 특수문자");
     return;
   }
 
@@ -187,32 +194,32 @@ signupBtn.onclick = async () => {
     const snap = await getDoc(ref);
 
     if (snap.exists()) {
-      alert("이미 가입된 학번입니다");
+      alert("이미 가입됨");
       return;
     }
 
     await setDoc(ref, {
-      password: pw
+      password: pw,
     });
 
     alert("회원가입 완료");
-
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     alert("회원가입 실패");
   }
 };
 
+// 🔥 좌석 데이터 실시간 반영
 seats.forEach((seat) => {
   const ref = doc(db, "seats", String(seat.num));
 
-  onSnapshot(ref, (snapshot) => {
-    if (snapshot.exists()) {
-      const data = snapshot.data();
+  onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
 
       seat.used = data.used;
-      seat.time = data.time;
       seat.owner = data.owner;
+      seat.endTime = data.endTime || 0;
     }
 
     if (currentUser) {
@@ -220,8 +227,6 @@ seats.forEach((seat) => {
 
       if (mine) {
         mySeatText.textContent = `${currentUser}님: ${mine.num}번 자리`;
-      } else {
-        mySeatText.textContent = `${currentUser}님 로그인됨`;
       }
     }
 
@@ -229,98 +234,63 @@ seats.forEach((seat) => {
   });
 });
 
+// 🔥 예약 (endTime 방식)
 reserveBtn.onclick = async () => {
   if (!selectedSeat || !currentUser) return;
 
   const minutes = Number(timeSelect.value);
 
+  const endTime = Date.now() + minutes * 60000;
+
   const ref = doc(db, "seats", String(selectedSeat));
 
   await setDoc(ref, {
     used: true,
-    time: minutes,
     owner: currentUser,
+    endTime: endTime,
   });
 
   popup.classList.add("hidden");
   selectedSeat = null;
 };
 
-cancelBtn.onclick = () => {
-  popup.classList.add("hidden");
-  selectedSeat = null;
-};
-
-setInterval(() => {
-  seats.forEach(async (seat) => {
-    if (seat.used && seat.time > 0) {
-      const ref = doc(db, "seats", String(seat.num));
-
-      if (seat.time === 1) {
-        await setDoc(ref, {
-          used: false,
-          time: 0,
-          owner: "",
-        });
-      } else {
-        await updateDoc(ref, {
-          time: seat.time - 1,
-        });
-      }
-    }
-  });
-}, 60000);
-
-render();
-
+// 🔥 비밀번호 변경
 changePwBtn.onclick = async () => {
-
   if (!currentUser) {
     alert("로그인 먼저");
     return;
   }
 
-  const oldPw =
-    prompt("현재 비밀번호 입력");
+  const oldPw = prompt("현재 비밀번호");
+  const newPw = prompt("새 비밀번호");
 
-  const newPw =
-    prompt("새 비밀번호 입력");
+  const pwRule = /^(?=.*[!@#$%^&*])(?=.*[A-Za-z])(?=.*\d).{4,}$/;
 
-  const pwRule =
-    /^(?=.*[!@#$%^&*])(?=.*[A-Za-z])(?=.*\d).{4,}$/;
-
-  if (!oldPw || !newPw) {
-    alert("입력 취소");
-    return;
-  }
+  if (!oldPw || !newPw) return;
 
   if (!pwRule.test(newPw)) {
-    alert("숫자/영문/특수문자 포함");
+    alert("비밀번호 형식 오류");
     return;
   }
 
   try {
-    const ref =
-      doc(db, "users", currentUser);
+    const ref = doc(db, "users", currentUser);
+    const snap = await getDoc(ref);
 
-    const snap =
-      await getDoc(ref);
-
-    if (
-      snap.data().password !== oldPw
-    ) {
+    if (snap.data().password !== oldPw) {
       alert("현재 비밀번호 틀림");
       return;
     }
 
     await updateDoc(ref, {
-      password: newPw
+      password: newPw,
     });
 
-    alert("비밀번호 변경 완료");
-
+    alert("변경 완료");
   } catch (e) {
     console.error(e);
     alert("변경 실패");
   }
 };
+
+render();
