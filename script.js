@@ -110,23 +110,21 @@ function render() {
 }
 
 loginBtn.onclick = async () => {
-  const email = idInput.value.trim().toLowerCase();
+
+  const id = idInput.value.trim();
   const pw = pwInput.value.trim();
 
-  const emailRule = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  // 학번 5자리 체크
+  const idRule = /^[0-9]{5}$/;
 
-  if (!emailRule.test(email)) {
-    alert("올바른 이메일 형식만 가능합니다");
-    return;
-  }
-
-  if (/[^a-z0-9@._%+-]/.test(email)) {
-    alert("영문 이메일만 가능합니다");
+  if (!idRule.test(id)) {
+    alert("학번 5자리로 입력하세요 (예: 20901)");
     return;
   }
 
   try {
-    const ref = doc(db, "users", email);
+
+    const ref = doc(db, "users", id);
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {
@@ -139,17 +137,21 @@ loginBtn.onclick = async () => {
       return;
     }
 
-    currentUser = email;
+    currentUser = id;
 
-    const mine = seats.find((s) => s.owner === currentUser);
+    const mine =
+      seats.find((s) => s.owner === currentUser);
 
     if (mine) {
-      mySeatText.textContent = `${currentUser}님: ${mine.num}번 자리`;
+      mySeatText.textContent =
+        `${currentUser}님: ${mine.num}번 자리`;
     } else {
-      mySeatText.textContent = `${currentUser}님 로그인됨`;
+      mySeatText.textContent =
+        `${currentUser}님 로그인됨`;
     }
 
     render();
+
   } catch (error) {
     console.error(error);
     alert("로그인 실패");
@@ -157,20 +159,19 @@ loginBtn.onclick = async () => {
 };
 
 signupBtn.onclick = async () => {
-  const email = idInput.value.trim().toLowerCase();
+
+  const id = idInput.value.trim();
   const pw = pwInput.value.trim();
 
-  const emailRule = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+  // 학번 5자리 체크
+  const idRule = /^[0-9]{5}$/;
 
-  const pwRule = /^(?=.*[!@#$%^&*])(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+  // 비밀번호 규칙 (그대로 유지)
+  const pwRule =
+    /^(?=.*[!@#$%^&*])(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
-  if (!emailRule.test(email)) {
-    alert("올바른 이메일 형식만 가능합니다");
-    return;
-  }
-
-  if (/[^a-z0-9@._%+-]/.test(email)) {
-    alert("영문 이메일만 가능합니다");
+  if (!idRule.test(id)) {
+    alert("학번 5자리로 입력하세요 (예: 20901)");
     return;
   }
 
@@ -180,19 +181,20 @@ signupBtn.onclick = async () => {
   }
 
   try {
-    const ref = doc(db, "users", email);
+    const ref = doc(db, "users", id);
     const snap = await getDoc(ref);
 
     if (snap.exists()) {
-      alert("이미 가입된 이메일입니다");
+      alert("이미 가입된 학번입니다");
       return;
     }
 
     await setDoc(ref, {
-      password: pw,
+      password: pw
     });
 
     alert("회원가입 완료");
+
   } catch (error) {
     console.error(error);
     alert("회원가입 실패");
