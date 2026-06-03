@@ -32,7 +32,11 @@ const signupBtn = document.getElementById("signupBtn");
 const changePwBtn = document.getElementById("changePwBtn");
 
 const mySeatText = document.getElementById("mySeatText");
-const timeSelect = document.getElementById("timeSelect");
+const sessionSelect = document.getElementById("sessionSelect");
+
+const reserveTimeInfo = document.getElementById("reserveTimeInfo");
+
+reserveTimeInfo.textContent = "예약 가능 시간 : 12:30 ~ 21:30";
 
 // 상태
 let currentUser = null;
@@ -43,9 +47,8 @@ let seats = [];
 for (let i = 1; i <= 12; i++) {
   seats.push({
     num: i,
-    used: false,
     owner: "",
-    endTime: 0,
+    session: "",
   });
 }
 
@@ -95,6 +98,12 @@ function render() {
       if (!currentUser) {
         alert("로그인 먼저");
         return;
+
+        if (!canReserve()) {
+          alert("예약 가능 시간은 12:30 ~ 21:30 입니다.");
+
+          return;
+        }
       }
 
       // 내 자리 취소
@@ -217,9 +226,8 @@ seats.forEach((seat) => {
     if (snap.exists()) {
       const data = snap.data();
 
-      seat.used = data.used;
-      seat.owner = data.owner;
-      seat.endTime = data.endTime || 0;
+      seat.owner = data.owner || "";
+      seat.session = data.session || "";
     }
 
     if (currentUser) {
@@ -234,23 +242,28 @@ seats.forEach((seat) => {
   });
 });
 
-// 🔥 예약 (endTime 방식)
+// 🔥 예약
 reserveBtn.onclick = async () => {
+
+  if (!canReserve()) {
+    alert("현재 예약할 수 없습니다.");
+
+    return;
+  }
   if (!selectedSeat || !currentUser) return;
 
-  const minutes = Number(timeSelect.value);
-
-  const endTime = Date.now() + minutes * 60000;
+  const session = sessionSelect.value;
 
   const ref = doc(db, "seats", String(selectedSeat));
 
   await setDoc(ref, {
-    used: true,
     owner: currentUser,
-    endTime: endTime,
+    session: sessionSelect.value,
+    date: todayString(),
   });
 
   popup.classList.add("hidden");
+
   selectedSeat = null;
 };
 
@@ -294,3 +307,37 @@ changePwBtn.onclick = async () => {
 };
 
 render();
+
+function sessionText(session) {
+  if (session === "part1") return "1부";
+
+  if (session === "part2") return "2부";
+
+  if (session === "both") return "1+2부";
+
+  return "";
+}
+
+function todayString() {
+  const now = new Date();
+
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0",
+  )}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+function canReserve() {
+  const now = new Date();
+
+  const minute = now.getHours() * 60 + now.getMinutes();
+
+  // 12:30 ~ 21:30
+
+  return minute >= 750 && minute < 1290;
+}
+
+cancelBtn.onclick = () => {
+  popup.classList.add("hidden");
+  selectedSeat = null;
+};
