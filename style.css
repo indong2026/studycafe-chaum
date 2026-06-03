@@ -92,12 +92,6 @@ h1{
     width:12px;
 }
 
-.time-red{
-    color:#d60000;
-    font-weight:bold;
-    font-size:15px;
-}
-
 .popup{
     position:fixed;
     inset:0;
@@ -155,4 +149,23 @@ h1{
         min-height:85px;
         font-size:14px;
     }
+}
+
+.session-text {
+    font-size: 12px;
+    display: block;
+    margin-top: 3px;
+}
+
+.part1 {
+    color: #0077ff;
+}
+
+.part2 {
+    color: #00aa55;
+}
+
+.both {
+    color: #cc6600;
+    font-weight: bold;
 }
