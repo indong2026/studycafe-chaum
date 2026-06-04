@@ -63,73 +63,60 @@ function render() {
   document.querySelectorAll(".desk").forEach((div, index) => {
     const seat = seats[index];
 
-    if (seat.used) {
+    const reserved = seat.owner && seat.date === todayString();
+
+    if (reserved) {
       div.classList.add("used");
     } else {
       div.classList.remove("used");
     }
 
-    let timeText = "";
+    let statusText = "";
 
-    if (seat.used && seat.endTime) {
-      const remain = getRemainingMinutes(seat.endTime);
-
-      if (remain <= 0) {
-        const ref = doc(db, "seats", String(seat.num));
-
-        setDoc(ref, {
-          used: false,
-          owner: "",
-          endTime: 0,
-        });
-
-        return;
+    if (reserved) {
+      if (seat.session === "part1") {
+        statusText = '<span class="session-text part1">야자 1부</span>';
+      } else if (seat.session === "part2") {
+        statusText = '<span class="session-text part2">야자 2부</span>';
+      } else if (seat.session === "both") {
+        statusText = '<span class="session-text both">야자 1·2부</span>';
       }
-
-      timeText =
-        remain <= 10
-          ? `<span class="time-red">${remain}분 남음</span>`
-          : `${remain}분 남음`;
     }
 
-    div.innerHTML = `${seat.num}번<br>${timeText}`;
+    div.innerHTML = `${seat.num}번<br>${statusText}`;
 
     div.onclick = async () => {
       if (!currentUser) {
         alert("로그인 먼저");
         return;
-
-        if (!canReserve()) {
-          alert("예약 가능 시간은 12:30 ~ 21:30 입니다.");
-
-          return;
-        }
       }
 
-      // 내 자리 취소
-      if (seat.used && seat.owner === currentUser) {
-        const ok = confirm("취소하시겠습니까?");
+      if (seat.owner === currentUser && seat.date === todayString()) {
+        const ok = confirm("예약을 취소하시겠습니까?");
+
         if (!ok) return;
 
         const ref = doc(db, "seats", String(seat.num));
 
         await setDoc(ref, {
-          used: false,
           owner: "",
-          endTime: 0,
+          session: "",
+          date: "",
         });
 
         return;
       }
 
-      // 남 자리 막기
-      if (seat.used && seat.owner !== currentUser) return;
+      if (reserved && seat.owner !== currentUser) {
+        return;
+      }
 
-      // 이미 내 자리 있음
-      const mine = seats.find((s) => s.owner === currentUser);
+      const mine = seats.find(
+        (s) => s.owner === currentUser && s.date === todayString(),
+      );
 
       if (mine) {
-        alert("이미 자리 사용 중");
+        alert(`이미 ${mine.num}번 자리를 예약했습니다`);
         return;
       }
 
@@ -228,13 +215,22 @@ seats.forEach((seat) => {
 
       seat.owner = data.owner || "";
       seat.session = data.session || "";
+      seat.date = data.date || "";
+    } else {
+      seat.owner = "";
+      seat.session = "";
+      seat.date = "";
     }
 
     if (currentUser) {
-      const mine = seats.find((s) => s.owner === currentUser);
+      const mine = seats.find(
+        (s) => s.owner === currentUser && s.date === todayString(),
+      );
 
       if (mine) {
         mySeatText.textContent = `${currentUser}님: ${mine.num}번 자리`;
+      } else {
+        mySeatText.textContent = `${currentUser}님 로그인됨`;
       }
     }
 
@@ -334,7 +330,7 @@ function canReserve() {
 
   // 12:30 ~ 21:30
 
-  return minute >= 750 && minute < 1290;
+  return true
 }
 
 cancelBtn.onclick = () => {
