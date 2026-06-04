@@ -83,7 +83,13 @@ function render() {
       }
     }
 
-    div.innerHTML = `${seat.num}번<br>${statusText}`;
+    let userText = "";
+
+    if (reserved) {
+      userText = `<span class="user-text">${seat.owner}</span>`;
+    }
+
+    div.innerHTML = `${seat.num}번<br>${statusText}<br>${userText}`;
 
     div.onclick = async () => {
       if (!currentUser) {
@@ -330,7 +336,7 @@ function canReserve() {
 
   // 12:30 ~ 21:30
 
-  return true
+  return minute >= 750 && minute < 1290;
 }
 
 cancelBtn.onclick = () => {
