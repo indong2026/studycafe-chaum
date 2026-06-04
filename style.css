@@ -169,3 +169,10 @@ h1{
     color: #cc6600;
     font-weight: bold;
 }
+
+.user-text{
+    display:block;
+    margin-top:4px;
+    font-size:13px;
+    font-weight:bold;
+}
