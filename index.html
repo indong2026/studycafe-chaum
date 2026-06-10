@@ -38,6 +38,10 @@
                 비밀번호 변경
             </button>
 
+            <button id="adminBtn" style="display:none;">
+                관리자 메뉴
+            </button>
+
     </div>
 
     <p id="mySeatText">
@@ -124,14 +128,44 @@
 
             
 
+            
+
         </div>
 
     </div>
+    <div id="adminPopup" class="popup hidden">
+
+  <div class="popup-box">
+
+    <h3>관리자 메뉴</h3>
+
+    <button id="adminCancelSeatBtn">
+      강제 예약 취소
+    </button>
+
+    <button id="adminAddTicketBtn">
+      예약권 추가
+    </button>
+
+    <button id="adminDeleteUserBtn">
+      계정 삭제
+    </button>
+
+    <button id="adminCloseBtn">
+      닫기
+    </button>
+
+  </div>
+
+</div>
 
     <script
         type="module"
         src="script.js">
     </script>
 
+  </div>
+
+</div>
 </body>
 </html>
