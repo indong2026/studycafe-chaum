@@ -51,7 +51,7 @@ let seats = [];
 
 let isAdmin = false;
 
-for (let i = 1; i <= 12; i++) {
+for (let i = 1; i <= 9; i++) {
   seats.push({
     num: i,
     owner: "",
