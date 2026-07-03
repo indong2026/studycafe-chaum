@@ -176,3 +176,22 @@ h1{
     font-size:13px;
     font-weight:bold;
 }
+
+.chaum-room{
+    display:grid;
+    grid-template-columns:100px 100px 120px;
+    gap:20px;
+    justify-content:center;
+    margin:0 auto;
+}
+
+.door{
+    min-height:95px;
+    background:#ffcc80;
+    border:3px solid #ff9800;
+    border-radius:14px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-weight:bold;
+}
