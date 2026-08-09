@@ -13,9 +13,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDXwy3-7MWWiQiRarngifBX1cq2R9t8VxI",
-  authDomain: "studycafe-yeong.firebaseapp.com",
-  projectId: "studycafe-yeong",
+  apiKey: "AIzaSyAnKX8uOzVZBzsQlDgxmFymFeaX-Mn7s_4",
+  authDomain: "studycafe-c3f62.firebaseapp.com",
+  projectId: "studycafe-c3f62",
 };
 
 const app = initializeApp(firebaseConfig);
