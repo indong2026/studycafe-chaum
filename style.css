@@ -177,21 +177,63 @@ h1{
     font-weight:bold;
 }
 
-.chaum-room{
+.room-wrap{
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+}
+
+.yeong-room{
     display:grid;
-    grid-template-columns:100px 100px 120px;
-    gap:20px;
-    justify-content:center;
+    grid-template-columns:repeat(8,70px);
+    gap:10px;
+
+    width:max-content;
     margin:0 auto;
 }
 
+#studyRoom{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+}  
+
 .door{
-    min-height:95px;
-    background:#ffcc80;
-    border:3px solid #ff9800;
-    border-radius:14px;
+    height:40px;
+    background:#8b5a2b;
+    color:white;
+    border-radius:8px;
+
     display:flex;
     justify-content:center;
     align-items:center;
+
+    font-size:14px;
     font-weight:bold;
+}
+
+.time-box{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:10px;
+    text-align:left;
+}
+
+.time-box label{
+    background:#f4f4f4;
+    padding:10px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.time-box input{
+    margin-right:8px;
+}
+
+#reserveDate{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    font-size:16px;
+    border-radius:10px;
 }

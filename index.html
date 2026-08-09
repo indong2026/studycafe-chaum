@@ -6,13 +6,13 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>채움터 좌석</title>
+    <title>영글터 좌석</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>채움터 좌석 선택</h1>
+    <h1>영글터 좌석 선택</h1>
 
     <div class="login-box">
 <p id="reserveTimeInfo"></p>
@@ -49,84 +49,149 @@
     </p>
 
     
+    <div class="room-wrap">
+    <div id="studyRoom" class="yeong-room">
 
-    <div class="chaum-room">
+        <div class="desk">1</div>
+        <div class="desk">2</div>
+        <div class="desk">3</div>
+        <div class="desk">4</div>
+        <div class="desk">5</div>
+        <div class="desk">6</div>
+        <div class="desk">7</div>
+        <div class="desk">8</div>
 
-  <div class="desk">1</div>
-  <div class="desk">2</div>
-  <div></div>
+        <div></div>
+        <div class="door">문</div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div class="door">문</div>
+        <div></div>
 
-  <div class="desk">3</div>
-  <div class="desk">4</div>
-  <div></div>
-
-  <div class="desk">5</div>
-  <div></div>
-  <div class="door">🚪 출입문</div>
-
-  <div class="desk">6</div>
-  <div class="desk">7</div>
-  <div></div>
-
-  <div class="desk">8</div>
-  <div class="desk">9</div>
-  <div></div>
-
+    </div>
 </div>
+
+    </div>
 
     <p id="message">
         좌석을 선택하세요.
     </p>
 
     <div
-        id="popup"
-        class="popup hidden">
+    id="popup"
+    class="popup hidden">
 
-        <div class="popup-box">
+    <div class="popup-box">
 
-            <p id="popupText">
-                자리를 예약하시겠습니까?
-            </p>
+        <p id="popupText">
+            자리를 예약하시겠습니까?
+        </p>
 
-            <label>
-    사용 시간 선택
-</label>
 
-<br><br>
+        <!-- 여기부터 날짜 -->
+        <label>
+            예약 날짜 선택
+        </label>
 
-<select id="sessionSelect">
+        <br>
 
-    <option value="part1">
-        야자 1부 (18:00~20:00)
-    </option>
+        <input
+            id="reserveDate"
+            type="date"
+        >
 
-    <option value="part2">
-        야자 2부 (20:10~21:30)
-    </option>
+        <br><br>
 
-    <option value="both">
-        야자 1부 + 2부
-    </option>
 
-</select>
+        <!-- 여기부터 시간 -->
+        <label>
+            사용 시간 선택
+        </label>
 
-            <br><br>
+        <br><br>
 
-            <button id="reserveBtn">
-                예약하기
-            </button>
+        <label>
+            <input
+                type="checkbox"
+                id="lunchCheck"
+            >
+            점심 (12:30~13:30)
+        </label>
 
-            <button id="cancelBtn">
-                취소
-            </button>
+        <br>
 
-            
+        <label>
+            <input
+                type="checkbox"
+                id="dinnerCheck"
+            >
+            저녁 (17:30~18:30)
+        </label>
 
-            
+        <br>
 
-        </div>
+        <label>
+            <input
+                type="checkbox"
+                id="part1Check"
+            >
+            야자 1부 (18:00~20:00)
+        </label>
+
+        <br>
+
+        <label>
+            <input
+                type="checkbox"
+                id="part2Check"
+            >
+            야자 2부 (20:10~21:30)
+        </label>
+
+        <br><br>
+
+
+        <button id="reserveBtn">
+            예약하기
+        </button>
+
+        <button id="cancelBtn">
+            취소
+        </button>
 
     </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- 예약 취소 팝업 -->
+<!-- ============================= -->
+
+<div id="cancelReservationPopup" class="popup hidden">
+
+    <div class="popup-box">
+
+        <h3>내 예약 관리</h3>
+
+        <p id="cancelReservationText">
+            예약된 시간입니다.
+        </p>
+
+        <!-- 내가 예약한 시간대 버튼들이 여기에 생성됨 -->
+        <div id="cancelTimeButtons"></div>
+
+        <br>
+
+        <button id="cancelReservationCloseBtn">
+            닫기
+        </button>
+
+    </div>
+
+</div>
+
     <div id="adminPopup" class="popup hidden">
 
   <div class="popup-box">
@@ -158,7 +223,8 @@
         src="script.js">
     </script>
 
-  <p style="margin-top:30px; font-size:13px; color:#666;">
+<p style="margin-top:30px; font-size:13px; color:#666;">
   오류나 개선 사항이 있을 경우 20901 강민준에게 문의해주세요.
+</p>
 </body>
 </html>
