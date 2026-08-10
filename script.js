@@ -57,29 +57,27 @@ const part2Check = document.getElementById("part2Check");
 // 예약 취소 팝업 요소
 // =============================
 
-const cancelReservationPopup =
-  document.getElementById("cancelReservationPopup");
+const cancelReservationPopup = document.getElementById(
+  "cancelReservationPopup",
+);
 
-const cancelTimeButtons =
-  document.getElementById("cancelTimeButtons");
+const cancelTimeButtons = document.getElementById("cancelTimeButtons");
 
-const cancelReservationCloseBtn =
-  document.getElementById("cancelReservationCloseBtn");
+const cancelReservationCloseBtn = document.getElementById(
+  "cancelReservationCloseBtn",
+);
 
 reserveTimeInfo.textContent = "예약 가능 시간 : 12:30 ~ 21:30";
 
 // 처음 사이트에 들어오면 오늘 날짜의 예약을 감시
 
-
 // 🔥 예약 날짜가 바뀌면 해당 날짜의 예약을 다시 불러옴
 reserveDate.addEventListener("change", () => {
-
   const selectedDate = reserveDate.value;
 
   if (!selectedDate) return;
 
   listenReservations(selectedDate);
-
 });
 
 //해시 코드 함수
@@ -102,7 +100,7 @@ let seats = [];
 
 let isAdmin = false;
 
-for (let i = 1; i <= 8; i++) {
+for (let i = 1; i <= 9; i++) {
   seats.push({
     num: i,
     owner: "",
@@ -156,12 +154,10 @@ function getRemainingMinutes(endTime) {
 // 날짜에 따른 예약 시간 선택 제한
 // ==========================================
 function updateTimeOptions() {
-
   const selectedDate = reserveDate.value;
 
   // 날짜를 선택하지 않았으면 전부 활성화
   if (!selectedDate) {
-
     lunchCheck.disabled = false;
     dinnerCheck.disabled = false;
     part1Check.disabled = false;
@@ -170,11 +166,8 @@ function updateTimeOptions() {
     return;
   }
 
-
   // 선택한 날짜의 요일 확인
-  const date = new Date(
-    selectedDate + "T00:00:00"
-  );
+  const date = new Date(selectedDate + "T00:00:00");
 
   const day = date.getDay();
 
@@ -183,7 +176,6 @@ function updateTimeOptions() {
   // ==========================================
 
   if (day === 5) {
-
     // 점심은 가능
     lunchCheck.disabled = false;
 
@@ -196,17 +188,13 @@ function updateTimeOptions() {
     dinnerCheck.checked = false;
     part1Check.checked = false;
     part2Check.checked = false;
-
   } else {
-
     // 금요일이 아니면 전부 가능
     lunchCheck.disabled = false;
     dinnerCheck.disabled = false;
     part1Check.disabled = false;
     part2Check.disabled = false;
-
   }
-
 }
 
 // ==========================================
@@ -214,7 +202,6 @@ function updateTimeOptions() {
 // ==========================================
 
 reserveDate.addEventListener("change", async () => {
-
   // 날짜가 바뀌었으므로
   // 기존에 비활성화되어 있던 체크박스를 전부 초기화
   lunchCheck.disabled = false;
@@ -228,13 +215,11 @@ reserveDate.addEventListener("change", async () => {
   part1Check.checked = false;
   part2Check.checked = false;
 
-
   // ==========================================
   // 금요일 등의 날짜 규칙 다시 적용
   // ==========================================
 
   updateTimeOptions();
-
 
   // ==========================================
   // 좌석을 아직 선택하지 않았다면 여기서 종료
@@ -243,7 +228,6 @@ reserveDate.addEventListener("change", async () => {
   if (!selectedSeat) {
     return;
   }
-
 
   // ==========================================
   // 새로 선택한 날짜의 예약 정보 가져오기
@@ -256,11 +240,10 @@ reserveDate.addEventListener("change", async () => {
     "reservations",
     selectedDate,
     "seats",
-    String(selectedSeat)
+    String(selectedSeat),
   );
 
   const snap = await getDoc(ref);
-
 
   // ==========================================
   // 해당 날짜에 예약이 없다면
@@ -271,7 +254,6 @@ reserveDate.addEventListener("change", async () => {
     return;
   }
 
-
   // ==========================================
   // 해당 날짜의 예약 정보 확인
   // ==========================================
@@ -279,7 +261,6 @@ reserveDate.addEventListener("change", async () => {
   const data = snap.data();
 
   const times = data.times || {};
-
 
   // ==========================================
   // 이미 예약된 시간대만 비활성화
@@ -300,7 +281,6 @@ reserveDate.addEventListener("change", async () => {
   if (times.part2?.owner) {
     part2Check.disabled = true;
   }
-
 });
 
 // 🔥 렌더
@@ -344,13 +324,13 @@ function render() {
     let owner = "";
 
     if (currentSession === "lunch") {
-      owner = seat.times?.lunch?.owner || "";
+      owner = seat.times?.lunch || "";
     } else if (currentSession === "dinner") {
-      owner = seat.times?.dinner?.owner || "";
+      owner = seat.times?.dinner || "";
     } else if (currentSession === "part1") {
-      owner = seat.times?.part1?.owner || "";
+      owner = seat.times?.part1 || "";
     } else if (currentSession === "part2") {
-      owner = seat.times?.part2?.owner || "";
+      owner = seat.times?.part2 || "";
     }
 
     // 예약되어 있으면 좌석 사용중 표시
@@ -526,83 +506,62 @@ function render() {
 // 예약 취소 팝업 열기
 // ==========================================
 
-function openCancelReservationPopup(
-  selectedDate,
-  seatNum,
-  times
-) {
-
+function openCancelReservationPopup(selectedDate, seatNum, times) {
   // 기존 버튼 제거
   cancelTimeButtons.innerHTML = "";
-
 
   // ========================================
   // 시간대 정보
   // ========================================
 
   const timeInfo = [
-
     {
       key: "lunch",
       text: "점심",
-      time: "12:30 ~ 13:30"
+      time: "12:30 ~ 13:30",
     },
 
     {
       key: "dinner",
       text: "저녁",
-      time: "17:30 ~ 18:30"
+      time: "17:30 ~ 18:30",
     },
 
     {
       key: "part1",
       text: "야자 1부",
-      time: "18:00 ~ 20:00"
+      time: "18:00 ~ 20:00",
     },
 
     {
       key: "part2",
       text: "야자 2부",
-      time: "20:10 ~ 21:30"
-    }
-
+      time: "20:10 ~ 21:30",
+    },
   ];
-
 
   // ========================================
   // 내가 예약한 시간만 버튼으로 표시
   // ========================================
 
   timeInfo.forEach((time) => {
-
     // 내가 예약한 시간이 아니면 표시하지 않음
-    if (
-      times[time.key]?.owner !== currentUser
-    ) {
+    if (times[time.key]?.owner !== currentUser) {
       return;
     }
 
-
     // 버튼 생성
-    const button =
-      document.createElement("button");
+    const button = document.createElement("button");
 
-
-    button.textContent =
-      `${time.text} (${time.time}) 예약 취소`;
-
+    button.textContent = `${time.text} (${time.time}) 예약 취소`;
 
     // 버튼 클릭
     button.onclick = async () => {
-
-      const ok = confirm(
-        `${time.text} 예약을 취소하시겠습니까?`
-      );
+      const ok = confirm(`${time.text} 예약을 취소하시겠습니까?`);
 
       if (!ok) {
         return;
       }
-
 
       // ====================================
       // 예약 문서 가져오기
@@ -613,153 +572,100 @@ function openCancelReservationPopup(
         "reservations",
         selectedDate,
         "seats",
-        String(seatNum)
+        String(seatNum),
       );
 
-
-      const snap =
-        await getDoc(ref);
-
+      const snap = await getDoc(ref);
 
       if (!snap.exists()) {
-
-        alert(
-          "예약 정보를 찾을 수 없습니다."
-        );
+        alert("예약 정보를 찾을 수 없습니다.");
 
         return;
-
       }
-
 
       const data = snap.data();
 
-      const currentTimes =
-        data.times || {};
-
+      const currentTimes = data.times || {};
 
       // ====================================
       // 실제로 내 예약인지 다시 확인
       // ====================================
 
-      if (
-        currentTimes[time.key]?.owner
-        !== currentUser
-      ) {
-
-        alert(
-          "이미 취소되었거나 다른 예약으로 변경되었습니다."
-        );
+      if (currentTimes[time.key]?.owner !== currentUser) {
+        alert("이미 취소되었거나 다른 예약으로 변경되었습니다.");
 
         return;
-
       }
-
 
       // ====================================
       // 기존 예약 유지
       // ====================================
 
       const newTimes = {
+        lunch: currentTimes.lunch || {
+          owner: "",
+        },
 
-        lunch:
-          currentTimes.lunch || {
-            owner: ""
-          },
+        dinner: currentTimes.dinner || {
+          owner: "",
+        },
 
-        dinner:
-          currentTimes.dinner || {
-            owner: ""
-          },
+        part1: currentTimes.part1 || {
+          owner: "",
+        },
 
-        part1:
-          currentTimes.part1 || {
-            owner: ""
-          },
-
-        part2:
-          currentTimes.part2 || {
-            owner: ""
-          }
-
+        part2: currentTimes.part2 || {
+          owner: "",
+        },
       };
-
 
       // ====================================
       // 선택한 시간만 취소
       // ====================================
 
       newTimes[time.key] = {
-        owner: ""
+        owner: "",
       };
-
 
       // ====================================
       // Firestore 저장
       // ====================================
 
       await setDoc(ref, {
-
         date: selectedDate,
 
-        times: newTimes
-
+        times: newTimes,
       });
-
 
       // ====================================
       // 예약권 1개 반환
       // ====================================
 
-      const userRef =
-        doc(db, "users", currentUser);
+      const userRef = doc(db, "users", currentUser);
 
-
-      const userSnap =
-        await getDoc(userRef);
-
+      const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
+        const userData = userSnap.data();
 
-        const userData =
-          userSnap.data();
-
-
-        const currentTicket =
-          userData.ticketCount ?? 0;
-
+        const currentTicket = userData.ticketCount ?? 0;
 
         await updateDoc(userRef, {
-
-          ticketCount:
-            Math.min(
-              currentTicket + 1,
-              10
-            )
-
+          ticketCount: Math.min(currentTicket + 1, 10),
         });
-
       }
-
 
       // ====================================
       // 완료
       // ====================================
 
-      alert(
-        `${time.text} 예약이 취소되었습니다.`
-      );
-
+      alert(`${time.text} 예약이 취소되었습니다.`);
 
       // 팝업 닫기
-      cancelReservationPopup
-        .classList
-        .add("hidden");
-
+      cancelReservationPopup.classList.add("hidden");
 
       // 내 정보 갱신
       await updateMyInfo();
-
 
       // 좌석 화면 갱신
       render();
@@ -768,32 +674,20 @@ function openCancelReservationPopup(
       setInterval(() => {
         render();
       }, 60000);
-
     };
 
-
     // 버튼 클래스
-    button.classList.add(
-      "cancel-time-btn"
-    );
-
+    button.classList.add("cancel-time-btn");
 
     // 버튼 추가
-    cancelTimeButtons.appendChild(
-      button
-    );
-
+    cancelTimeButtons.appendChild(button);
   });
-
 
   // ========================================
   // 팝업 표시
   // ========================================
 
-  cancelReservationPopup
-    .classList
-    .remove("hidden");
-
+  cancelReservationPopup.classList.remove("hidden");
 }
 
 // ==========================================
@@ -801,11 +695,7 @@ function openCancelReservationPopup(
 // ==========================================
 
 cancelReservationCloseBtn.onclick = () => {
-
-  cancelReservationPopup
-    .classList
-    .add("hidden");
-
+  cancelReservationPopup.classList.add("hidden");
 };
 
 // 🔥 로그인
@@ -938,7 +828,6 @@ loginBtn.onclick = async () => {
 
       listenReservations(selectedDate);
     });
-
   } catch (e) {
     console.error(e);
     alert("로그인 실패");
@@ -1013,7 +902,6 @@ let reservationUnsubscribers = [];
 
 // 🔥 특정 날짜의 예약을 실시간으로 감시
 function listenReservations(date) {
-
   // 기존 날짜의 실시간 감시 중지
   reservationUnsubscribers.forEach((unsubscribe) => {
     unsubscribe();
@@ -1023,17 +911,9 @@ function listenReservations(date) {
 
   // 좌석 1~8 감시
   seats.forEach((seat) => {
-
-    const ref = doc(
-      db,
-      "reservations",
-      date,
-      "seats",
-      String(seat.num)
-    );
+    const ref = doc(db, "reservations", date, "seats", String(seat.num));
 
     const unsubscribe = onSnapshot(ref, (snap) => {
-
       if (snap.exists()) {
         const data = snap.data();
 
@@ -1071,22 +951,20 @@ function listenReservations(date) {
       render();
 
       // 처음에는 오늘 날짜 예약 감시
-    listenReservations(todayString());
+      listenReservations(todayString());
 
-    // 🔥 예약 날짜가 바뀌면 해당 날짜의 예약을 다시 불러옴
-    reserveDate.addEventListener("change", () => {
-      const selectedDate = reserveDate.value;
+      // 🔥 예약 날짜가 바뀌면 해당 날짜의 예약을 다시 불러옴
+      reserveDate.addEventListener("change", () => {
+        const selectedDate = reserveDate.value;
 
-      if (!selectedDate) return;
+        if (!selectedDate) return;
 
-      listenReservations(selectedDate);
-    });
-
+        listenReservations(selectedDate);
+      });
     });
 
     // 나중에 날짜가 바뀌면 이 감시를 종료할 수 있도록 저장
     reservationUnsubscribers.push(unsubscribe);
-
   });
 }
 
@@ -1387,7 +1265,7 @@ reserveBtn.onclick = async () => {
 
     alert("예약 중 오류가 발생했습니다.");
   }
-};;;;
+};
 
 // 🔥 비밀번호 변경
 changePwBtn.onclick = async () => {
@@ -1597,5 +1475,4 @@ adminDeleteUserBtn.onclick = async () => {
   await deleteDoc(doc(db, "users", id));
 
   alert("삭제 완료");
-
 };
